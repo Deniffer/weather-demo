@@ -1,12 +1,10 @@
 import axios from "axios";
 import { WeatherData } from "../types/weather";
 
-const API_KEY = "4f7a530d3ca7c309b75461d8000b2431";
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
-export const getWeatherData = async (
-  location: string
-): Promise<WeatherData> => {
+export const getWeatherData = async (location: string): Promise<WeatherData> => {
   try {
     const [currentWeatherResponse, forecastResponse] = await Promise.all([
       axios.get(`${BASE_URL}/weather`, {
@@ -25,6 +23,9 @@ export const getWeatherData = async (
       }),
     ]);
 
+    const sunriseTime = new Date(currentWeatherResponse.data.sys.sunrise * 1000).toLocaleTimeString();
+    const sunsetTime = new Date(currentWeatherResponse.data.sys.sunset * 1000).toLocaleTimeString();
+
     return {
       current: {
         temp: currentWeatherResponse.data.main.temp,
@@ -37,8 +38,10 @@ export const getWeatherData = async (
         description: currentWeatherResponse.data.weather[0].description,
         icon: currentWeatherResponse.data.weather[0].icon,
         visibility: currentWeatherResponse.data.visibility,
+        sunrise: sunriseTime,
+        sunset: sunsetTime,
       },
-      forecast: forecastResponse.data.list.slice(0, 7).map((day: any) => ({
+      forecast: forecastResponse.data.list.filter((item: any, index: number) => index % 8 === 0).slice(0, 7).map((day: any) => ({
         dt: day.dt,
         temp: {
           min: day.main.temp_min,

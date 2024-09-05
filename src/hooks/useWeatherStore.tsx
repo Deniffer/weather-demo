@@ -7,7 +7,6 @@ interface WeatherStore {
   isLoading: boolean;
   error: WeatherError | null;
   fetchWeather: (location: string) => Promise<void>;
-  setLocation: (location: string) => void;
 }
 
 export const useWeatherStore = create<WeatherStore>((set) => ({
@@ -24,11 +23,4 @@ export const useWeatherStore = create<WeatherStore>((set) => ({
       set({ error: { message: (error as Error).message }, isLoading: false });
     }
   },
-
-  setLocation: (location: string) =>
-    set((state) => ({
-      weatherData: state.weatherData
-        ? { ...state.weatherData, location }
-        : null,
-    })),
 }));
