@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import Fuse from "fuse.js";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
-import { getCityMatches } from "../services/weatherApi";
+import { Command, CommandEmpty, CommandGroup, CommandItem } from "./ui/command";
+import { usStates } from "../usStates";
 
 interface LocationInputProps {
   onLocationChange: (location: string) => void;
@@ -11,24 +12,41 @@ interface LocationInputProps {
 
 const LocationInput: React.FC<LocationInputProps> = ({ onLocationChange }) => {
   const [inputValue, setInputValue] = useState("");
-  const [matches, setMatches] = useState<Array<{ name: string; country: string; state?: string }>>([]);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchMatches = async () => {
-      if (inputValue.length >= 3) {
-        const cityMatches = await getCityMatches(inputValue);
-        setMatches(cityMatches);
-        setOpen(true);
-      } else {
-        setMatches([]);
-        setOpen(false);
-      }
-    };
+  // 创建 Fuse 实例
+  const fuse = useMemo(() => {
+    const locations = usStates.flatMap((state) =>
+      state.cities.map((city) => `${city}, ${state.name}`)
+    );
+    console.log("locations:", locations);
+    return new Fuse(locations, {
+      threshold: 1,
+      distance: 100,
+      minMatchCharLength: 2,
+    });
+  }, []);
 
-    const debounceTimer = setTimeout(fetchMatches, 300);
-    return () => clearTimeout(debounceTimer);
-  }, [inputValue]);
+  // 使用 Fuse 进行搜索
+  const getMatches = useCallback(
+    (query: string) => {
+      if (query.length < 2) return [];
+      const searchResults = fuse.search(query);
+      console.log("searchResults:", searchResults);
+      return searchResults.slice(0, 10).map((result) => result.item);
+    },
+    [fuse]
+  );
+
+  const [matches, setMatches] = useState<string[]>([]);
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    const newMatches = getMatches(value);
+    console.log("newMatches:", newMatches);
+    setMatches(newMatches);
+    setOpen(value.length >= 2);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +56,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onLocationChange }) => {
     }
   };
 
-  const handleSelectCity = (city: { name: string; country: string; state?: string }) => {
-    const location = `${city.name}, ${city.state ? `${city.state}, ` : ''}${city.country}`;
+  const handleSelectCity = (location: string) => {
     setInputValue(location);
     onLocationChange(location);
     setOpen(false);
@@ -47,35 +64,37 @@ const LocationInput: React.FC<LocationInputProps> = ({ onLocationChange }) => {
 
   return (
     <form onSubmit={handleSubmit} className="mb-8 relative">
-      <div className="flex gap-8">
+      <div className="flex gap-4">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Input
               type="text"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Enter city name or zip code"
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder="Enter US city or state"
               className="bg-white text-gray-900 placeholder-gray-500"
             />
           </PopoverTrigger>
-          <PopoverContent className="p-0" align="start">
+          <PopoverContent className="p-0 w-[300px]" align="start">
             <Command>
-              <CommandInput placeholder="Search city..." />
-              <CommandEmpty>No city found.</CommandEmpty>
+              <CommandEmpty>No location found.</CommandEmpty>
               <CommandGroup>
-                {matches.map((city, index) => (
+                {/* {matches.map((location, index) => (
                   <CommandItem
                     key={index}
-                    onSelect={() => handleSelectCity(city)}
+                    onSelect={() => handleSelectCity(location)}
                   >
-                    {city.name}, {city.state ? `${city.state}, ` : ''}{city.country}
+                    {location}
                   </CommandItem>
-                ))}
+                ))} */}
+                {matches}
               </CommandGroup>
             </Command>
           </PopoverContent>
         </Popover>
-        <Button type="submit" size="lg">Search</Button>
+        <Button type="submit" size="lg">
+          Search
+        </Button>
       </div>
     </form>
   );
