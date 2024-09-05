@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useWeatherStore } from './hooks/useWeatherStore';
-import CurrentWeather from './components/CurrentWeather';
-import WeatherForecast from './components/WeatherForecast';
-import LocationInput from './components/LocationInput';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { useWeatherStore } from "./hooks/useWeatherStore";
+import CurrentWeather from "./components/CurrentWeather";
+import WeatherForecast from "./components/WeatherForecast";
+import LocationInput from "./components/LocationInput";
+import "./App.css";
+
+import "./global.css";
 
 const App: React.FC = () => {
   const { weatherData, isLoading, error, fetchWeather } = useWeatherStore();
-  const [location, setLocation] = useState('New York');
+  const [location, setLocation] = useState("New York");
 
   useEffect(() => {
     fetchWeather(location);
@@ -22,7 +24,10 @@ const App: React.FC = () => {
         {error && <p className="text-center text-red-300">{error.message}</p>}
         {weatherData && (
           <div className="space-y-6">
-            <CurrentWeather weather={weatherData.current} location={weatherData.location} />
+            <CurrentWeather
+              weather={weatherData.current}
+              location={weatherData.location}
+            />
             <WeatherForecast forecast={weatherData.forecast} />
           </div>
         )}
