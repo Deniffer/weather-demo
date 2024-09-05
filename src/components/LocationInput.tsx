@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Input } from './ui/input';
+import { cn } from '../lib/utils';
 
 interface LocationInputProps {
   onLocationChange: (location: string) => void;
@@ -18,12 +20,18 @@ const LocationInput: React.FC<LocationInputProps> = ({ onLocationChange }) => {
   return (
     <form onSubmit={handleSubmit} className="mb-8">
       <div className="flex">
-        <input
+        <Input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter city name or zip code"
-          className="flex-grow px-4 py-2 bg-white bg-opacity-20 backdrop-blur-lg text-white placeholder-gray-300 border border-white border-opacity-30 rounded-l focus:outline-none focus:ring-2 focus:ring-white"
+          className={cn(
+            "flex-grow rounded-r-none",
+            "bg-white bg-opacity-20 backdrop-blur-lg",
+            "text-white placeholder-gray-300",
+            "border-white border-opacity-30",
+            "focus:ring-white"
+          )}
         />
         <button
           type="submit"
