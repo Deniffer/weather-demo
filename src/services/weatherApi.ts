@@ -3,6 +3,7 @@ import { WeatherData } from "../types/weather";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
+const GEO_BASE_URL = "http://api.openweathermap.org/geo/1.0";
 
 export const getWeatherData = async (location: string): Promise<WeatherData> => {
   try {
@@ -58,5 +59,25 @@ export const getWeatherData = async (location: string): Promise<WeatherData> => 
     };
   } catch (error) {
     throw new Error("Failed to fetch weather data");
+  }
+};
+
+export const getCityMatches = async (query: string): Promise<Array<{ name: string; country: string; state?: string }>> => {
+  try {
+    const response = await axios.get(`${GEO_BASE_URL}/direct`, {
+      params: {
+        q: query,
+        limit: 5,
+        appid: API_KEY,
+      },
+    });
+    return response.data.map((city: any) => ({
+      name: city.name,
+      country: city.country,
+      state: city.state,
+    }));
+  } catch (error) {
+    console.error("Error fetching city matches:", error);
+    return [];
   }
 };
