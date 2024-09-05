@@ -9,6 +9,8 @@ export interface CurrentWeather {
   description: string;
   icon: string;
   visibility: number;
+  sunrise: string;
+  sunset: string;
 }
 
 export interface ForecastDay {

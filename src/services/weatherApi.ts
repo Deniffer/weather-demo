@@ -41,7 +41,7 @@ export const getWeatherData = async (location: string): Promise<WeatherData> => 
         sunrise: sunriseTime,
         sunset: sunsetTime,
       },
-      forecast: forecastResponse.data.list.filter((item: any, index: number) => index % 8 === 0).slice(0, 7).map((day: any) => ({
+      forecast: forecastResponse.data.list.filter((_: any, index: number) => index % 8 === 0).slice(0, 7).map((day: any) => ({
         dt: day.dt,
         temp: {
           min: day.main.temp_min,
