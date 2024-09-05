@@ -4,7 +4,6 @@ import CurrentWeather from "./components/CurrentWeather";
 import WeatherForecast from "./components/WeatherForecast";
 import LocationInput from "./components/LocationInput";
 import "./App.css";
-
 import "./global.css";
 
 const App: React.FC = () => {
