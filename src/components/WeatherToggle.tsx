@@ -26,6 +26,7 @@ const WeatherToggle: React.FC = () => {
           </div>
           <div>
             <p>Pressure: {current.pressure} hPa</p>
+            
             <p>Visibility: {weatherData.current.visibility / 1000} km</p>
           </div>
         </div>
