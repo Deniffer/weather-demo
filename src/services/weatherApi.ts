@@ -1,7 +1,7 @@
 import axios from "axios";
 import { WeatherData } from "../types/weather";
 
-const API_KEY = "4f7a530d3ca7c309b75461d8000b2431"; 
+const API_KEY = "4f7a530d3ca7c309b75461d8000b2431";
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 export const getWeatherData = async (
@@ -36,6 +36,7 @@ export const getWeatherData = async (
         wind_speed: currentWeatherResponse.data.wind.speed,
         description: currentWeatherResponse.data.weather[0].description,
         icon: currentWeatherResponse.data.weather[0].icon,
+        visibility: currentWeatherResponse.data.visibility,
       },
       forecast: forecastResponse.data.list.slice(0, 7).map((day: any) => ({
         dt: day.dt,
