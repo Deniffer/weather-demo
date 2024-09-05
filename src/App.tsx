@@ -14,7 +14,7 @@ const App: React.FC = () => {
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 text-white w-full">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-center">Weather App</h1>
         <LocationInput onLocationChange={setLocation} />
