@@ -5,7 +5,7 @@ import WeatherToggle from "./components/WeatherToggle";
 import WeatherForecast from "./components/WeatherForecast";
 
 const App: React.FC = () => {
-  const { fetchWeather, weatherData, setLocation } = useWeatherStore();
+  const { fetchWeather, weatherData } = useWeatherStore();
 
   useEffect(() => {
     fetchWeather("New York");
